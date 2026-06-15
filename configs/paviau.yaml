@@ -1,0 +1,16 @@
+# Pavia University (PaviaU) dataset configuration
+
+dataset:
+  name: "paviau"
+  mat_file: "PaviaU.mat"
+  data_key: "Y"
+  label_key: "groundTruth"
+  in_channels: 103
+  num_classes: 9
+
+model:
+  in_channels: 103
+  num_classes: 9
+
+experiment:
+  exp_name: "paviau_default"

@@ -1,0 +1,259 @@
+---
+description: Lightweight research project rules
+globs: **/*
+alwaysApply: true
+---
+
+# Project rules
+
+This repository is a lightweight research-oriented Python project template. It is not a large software platform and should not be reorganized as one.
+
+## Core structure
+
+Keep the project structure simple and flat.
+
+Expected top-level structure:
+
+```text
+configs/
+data/
+models/
+utils/
+scripts/
+tools/
+docs/
+experiments/
+train.py
+eval.py
+infer.py
+requirements.txt
+README.md
+.gitignore
+```
+
+Do not create:
+
+```text
+src/
+losses/
+metrics/
+visualization/
+engine/
+core/
+tasks/
+```
+
+unless the user explicitly asks for such a change.
+
+## Directory responsibilities
+
+Use `configs/` for YAML configuration files.
+
+Use `data/` for dataset loading, preprocessing, and dataloader logic.
+
+Use `models/` for model definitions, model components, proposed methods, and optional baselines.
+
+Use `utils/` for stable project utilities, including:
+
+```text
+config helpers
+logging
+seed control
+checkpoint utilities
+loss functions
+metrics
+visualization
+image/data I/O helpers
+experiment directory helpers
+```
+
+Loss functions, metrics, and visualization code should stay in `utils/` unless the user explicitly requests another structure.
+
+Use `scripts/` only for stable and reproducible command-line workflows, such as training, evaluation, inference, and result export.
+
+Use `tools/` only for temporary debugging, checking, inspection, and one-off scripts. Scripts in `tools/` must not be required by `train.py`, `eval.py`, or `infer.py`.
+
+Use `docs/` for experiment records, protocol notes, and project documentation.
+
+Use `experiments/` only for generated outputs. Do not commit experiment outputs, checkpoints, or large result files.
+
+## Entry points
+
+The main entry points should remain:
+
+```text
+train.py
+eval.py
+infer.py
+```
+
+Do not create multiple competing entry files such as:
+
+```text
+train_new.py
+train_debug.py
+test_final.py
+run_exp_v2.py
+```
+
+Temporary tests should go into `tools/`.
+
+## Configuration rules
+
+Use recursive deep merge when combining `base.yaml` with experiment-specific configuration files.
+
+Do not use shallow dictionary update for nested configuration fields.
+
+A loaded configuration should preserve common fields from `base.yaml`, including:
+
+```text
+project.name
+project.task
+model.name
+experiment.save_dir
+experiment.exp_name
+train.epochs
+```
+
+If a configuration file is missing, raise a clear `FileNotFoundError`.
+
+When adding a new experiment, prefer adding or modifying a YAML file under `configs/` rather than hard-coding values in Python files.
+
+## Experiment output rules
+
+Each experiment should save outputs under:
+
+```text
+experiments/<exp_name>/
+```
+
+The experiment directory should contain:
+
+```text
+config.yaml
+command.txt
+env.txt
+checkpoints/
+logs/
+results/
+figures/
+tables/
+```
+
+Training should save:
+
+```text
+checkpoints/best.pth
+checkpoints/last.pth
+logs/train.log
+logs/metrics.jsonl
+```
+
+Do not write generated outputs directly to the project root.
+
+## Logging rules
+
+Training logs should clearly print:
+
+```text
+project name
+task name
+dataset name
+model name
+seed
+device
+experiment directory
+number of trainable parameters
+```
+
+Use readable console logs. Colored console logs are acceptable, but file logs should remain plain text.
+
+Use progress bars for long training loops when appropriate.
+
+## Tools policy
+
+`tools/` is disposable.
+
+Do not import from `tools/` in:
+
+```text
+train.py
+eval.py
+infer.py
+models/
+data/
+utils/
+```
+
+If a function becomes necessary for the main workflow, move it from `tools/` to `utils/`.
+
+## Research code style
+
+Prefer clear and direct research code over overly abstract engineering patterns.
+
+Avoid unnecessary registries, factories, decorators, or plugin systems unless they solve an actual problem in this project.
+
+Do not over-split stable utilities into many small top-level modules.
+
+Keep implementation readable for paper reproduction.
+
+## Cursor editing behavior
+
+When modifying this project, make minimal and targeted changes.
+
+Before editing, identify the relevant files and avoid broad rewrites.
+
+After editing Python files, run at least:
+
+```bash
+python tools/check_project.py
+python tools/inspect_config.py --config paviau.yaml
+python -m py_compile train.py eval.py infer.py
+```
+
+If additional files were modified, include them in the compile check.
+
+Do not run heavy training unless the user explicitly asks for it.
+
+If training cannot run because PyTorch or data is missing, report that clearly. Do not treat missing dependencies or missing datasets as framework logic errors.
+
+## Communication rules for this project
+
+When reporting changes, summarize:
+
+```text
+1. Files changed
+2. Structural changes
+3. Functional changes
+4. Checks performed
+5. Remaining issues, if any
+```
+
+When giving commands to the user, provide complete copyable commands.
+
+Avoid placeholders such as:
+
+```text
+your_config.yaml
+/path/to/data
+```
+
+If an exact path is unknown, first provide a command to list or inspect the available paths.
+
+## Prohibited changes unless explicitly requested
+
+Do not:
+
+```text
+create src/
+create top-level losses/
+create top-level metrics/
+create top-level visualization/
+move stable utilities into tools/
+make tools required by the main pipeline
+rename train.py, eval.py, or infer.py
+commit checkpoints or datasets
+hide important experiment settings inside Python code
+```
+
+The project should remain a compact, independent, paper-oriented research repository.

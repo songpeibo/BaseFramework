@@ -1,0 +1,16 @@
+# Chikusei dataset configuration
+
+dataset:
+  name: "chikusei"
+  mat_file: "Chikusei.mat"
+  data_key: "chikusei"
+  label_key: "GT"
+  in_channels: 128
+  num_classes: 19
+
+model:
+  in_channels: 128
+  num_classes: 19
+
+experiment:
+  exp_name: "chikusei_default"

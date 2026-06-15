@@ -1,0 +1,46 @@
+# Base configuration shared across all experiments
+
+project:
+  name: "base_framework"
+  task: "classification_demo"
+  seed: 42
+  device: "cuda"  # cuda | cpu
+
+data:
+  raw_dir: "data/raw"
+  processed_dir: "data/processed"
+  patch_size: 9
+  train_ratio: 0.1
+  val_ratio: 0.05
+  num_workers: 4
+  normalize: true
+
+model:
+  name: "hsi_net"  # hsi_net | cnn_baseline | transformer_baseline
+  in_channels: 103
+  num_classes: 9
+  hidden_dim: 128
+  dropout: 0.3
+
+train:
+  epochs: 100
+  batch_size: 64
+  lr: 0.001
+  weight_decay: 0.0001
+  scheduler: "cosine"  # cosine | step | none
+  early_stopping_patience: 15
+  grad_clip: 1.0
+  amp: true
+
+loss:
+  name: "cross_entropy"  # cross_entropy | focal
+
+experiment:
+  exp_name: "default"
+  save_dir: "experiments"
+  log_interval: 10
+  save_best_only: true
+
+test:
+  batch_size: 128
+  checkpoint: "best.pth"
